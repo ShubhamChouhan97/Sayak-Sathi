@@ -1,22 +1,22 @@
-// import React from "react";
-// import { Navigate, Outlet } from "react-router";
-// import { useAppStore } from "../../store";
+import React from "react";
+import { Navigate, Outlet } from "react-router";
+import { useAppStore } from "../../store";
 
-// interface RoleProtectedRouteProps {
-// 	allowedRoles: number[];
-// }
+interface RoleProtectedRouteProps {
+	allowedRoles: number[];
+}
 
-// const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
-// 	allowedRoles,
-// }) => {
-// 	const session = useAppStore().session;
+const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
+	allowedRoles,
+}) => {
+	const session = useAppStore().session;
 
-// 	if (!session) {
-// 		return <div>Loading session ...</div>;
-// 	}
+	if (!session) {
+		return <div>Loading session ...</div>;
+	}
 
-// 	const hasAccess = allowedRoles.includes(session.role);
-// 	return hasAccess ? <Outlet /> : <Navigate to="/dashboard" replace />;
-// };
+	const hasAccess = allowedRoles.includes(session.role);
+	return hasAccess ? <Outlet /> : <Navigate to="/dashboard" replace />;
+};
 
-// export default RoleProtectedRoute;
+export default RoleProtectedRoute;

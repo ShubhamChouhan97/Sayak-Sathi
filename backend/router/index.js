@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { loginUser } from '../controller/userController.js';
 const router = Router();
+import multer from "multer";
+const upload = multer();
 import { checkLoginStatus } from "../middleware/checkAuth.js";
 
 import api from "./api/index.js";
 
 
-router.use('/api',checkLoginStatus, api);
+router.use('/api',checkLoginStatus,upload.none(), api);
 router.post('/login', loginUser);
 
 router.get('/session', checkLoginStatus, async (req, res, next) => {

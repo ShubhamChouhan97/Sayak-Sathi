@@ -57,7 +57,6 @@ const schema = new mongoose.Schema({
     }
 }, { timestamps: true, });
 
-schema.index({ id: 1 }, { background: true, unique: true });
 schema.index({ email: 1 }, { background: true, unique: true });
 schema.index({ phoneNumber: 1 }, { background: true, unique: true });
 const model = mongoose.model("user", schema);

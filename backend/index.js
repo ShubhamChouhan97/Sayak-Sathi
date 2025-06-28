@@ -13,7 +13,7 @@ import morgan from 'morgan';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -53,9 +53,9 @@ mongoose.connect(process.env.MONGO_URI)
 });
 
 
-app.get('/', (req, res) => {
-    res.send('Welcome to the SayakSathi Backend API');
-});
+// app.get('/', (req, res) => {
+//     res.send('Welcome to the SayakSathi Backend API');
+// });
 
 // Routes
 import Routes from './router/index.js';

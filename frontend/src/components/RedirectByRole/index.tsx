@@ -12,7 +12,7 @@ const RedirectByRole = () => {
             if (session.role === 1) {
                 navigate("/dashboard/admin");
             } else {
-                navigate("/dashboard/requests");
+                navigate("/dashboard/userrequest");
             }
         }
     }, [session, navigate]);

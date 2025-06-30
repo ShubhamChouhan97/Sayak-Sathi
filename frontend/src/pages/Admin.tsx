@@ -1,15 +1,4 @@
-// import React, { useState } from "react";
-// import { Button, Drawer, Form, Input, Popconfirm, Select, Space } from "antd";
-// import CustomTable from "../components/CustomTable";
-// import { roles } from "../libs/constants";
-// import { courtClient, useAppStore, userClient } from "../store";
-// import MainAreaLayout from "../components/main-layout/main-layout";
-// import { useMessage } from "../hooks/message";
-// import { useMutation, useQuery } from "@tanstack/react-query";
-// import { Link } from "react-router";
-import { adduser } from "../Api/userAdd";
-
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
 	Button,
 	Drawer,
@@ -23,49 +12,35 @@ import CustomTable from "../components/CustomTable";
 import { roles } from "../libs/constants";
 import MainAreaLayout from "../components/main-layout/main-layout";
 import { Link } from "react-router";
+import { adduser,getUsers,deleteUser } from "../Api/userAdd";
 
 interface User {
-	id: string;
+	_id: string;
 	name: string;
 	email: string;
-	role: number;
 	phoneNumber: string;
 	countryCode: string;
 }
-
 export const Admin: React.FC = () => {
+	const [user ,setUser] =  useState([]);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [form] = Form.useForm();
 
-	// Dummy data for demo
-	const staticUsers: User[] = [
-		{
-			id: "1",
-			name: "John Doe",
-			email: "john@example.com",
-			role: roles.user,
-			phoneNumber: "9876543210",
-			countryCode: "+91",
-		},
-		{
-			id: "2",
-			name: "Jane Smith",
-			email: "jane@example.com",
-			role: roles.user,
-			phoneNumber: "9123456780",
-			countryCode: "+1",
-		},
-	];
 
-	const staticCourts = [
-		{ value: "court1", label: "Supreme Court" },
-		{ value: "court2", label: "High Court" },
-	];
+	const fetchuser = async()=>{
+	try{
+	   const userdata =	await getUsers();
+	   setUser(userdata);
+	}catch{
+		alert('Unable to fetch user');
+	}
+      }
 
-	const getRoleLabel = (role: roles.user | roles.admin) =>
-		role === roles.user ? "user" : "admin";
+	  useEffect(() => {
+		fetchuser();
+	}, []);
 
 	const resetFormState = () => {
 		setIsDrawerOpen(false);
@@ -77,33 +52,30 @@ export const Admin: React.FC = () => {
 	};
 
 	const handleSubmit = async (values: any) => {
-	const formData = new FormData();
-
-	// Append form values to FormData
-	for (const key in values) {
-		if (values.hasOwnProperty(key)) {
-			formData.append(key, values[key]);
+		try {
+			console.log("Form values:", values);
+			await adduser(values); // backend will assign role
+			fetchuser();
+			resetFormState();
+		} catch (error) {
+			console.error("Failed to add user:", error);
 		}
-	}
-	
-    console.log("Form Data:", formData);
-  await adduser(formData)
-	
-
-	resetFormState();
-};
-
+	};
 
 	const handleEditUser = (user: User) => {
 		setSelectedUser(user);
-		form.setFieldsValue({
-			...user,
-			role: `${user.role}`,
-		});
+		form.setFieldsValue(user);
 		setIsEditing(true);
 		setIsDrawerOpen(true);
 	};
-
+   const  handelDeleteUser = async (_id: string) => {
+	try {
+		await deleteUser(_id);
+		fetchuser();
+		} catch (error) {
+			console.error("Failed to delete user:", error);
+			}
+			};
 	const columns = [
 		{ title: "Name", dataIndex: "name", key: "name" },
 		{ title: "Email", dataIndex: "email", key: "email" },
@@ -114,29 +86,13 @@ export const Admin: React.FC = () => {
 				`${record.countryCode} ${record.phoneNumber}`,
 		},
 		{
-			title: "User Type",
-			dataIndex: "role",
-			key: "role",
-			render: (role: number) => getRoleLabel(role),
-		},
-		{
-			title: "Court",
-			dataIndex: "courtId",
-			key: "court",
-			render: (courtId: { name: string; id: string }) => (
-				<Link to={`/dashboard/court/${courtId?.id}`}>
-					{courtId?.name}
-				</Link>
-			),
-		},
-		{
 			key: "actions",
 			render: (record: User) => (
 				<Space>
 					<Button onClick={() => handleEditUser(record)}>Edit</Button>
 					<Popconfirm
 						title="Delete this user?"
-						onConfirm={() => console.log("Delete", record)}
+						onConfirm={() => handelDeleteUser(record._id)  }
 					>
 						<Button danger>Delete</Button>
 					</Popconfirm>
@@ -147,7 +103,7 @@ export const Admin: React.FC = () => {
 
 	return (
 		<MainAreaLayout
-			title={`Manage Users`}
+			title="Manage Users"
 			extra={
 				<Button
 					type="primary"
@@ -163,7 +119,7 @@ export const Admin: React.FC = () => {
 		>
 			<CustomTable
 				columns={columns}
-				data={staticUsers}
+				data={user}
 				loading={false}
 				serialNumberConfig={{ name: "", show: true }}
 			/>
@@ -208,7 +164,6 @@ export const Admin: React.FC = () => {
 							<Select.Option value="+91">+91 (India)</Select.Option>
 							<Select.Option value="+1">+1 (USA)</Select.Option>
 							<Select.Option value="+44">+44 (UK)</Select.Option>
-							{/* Add more if needed */}
 						</Select>
 					</Form.Item>
 

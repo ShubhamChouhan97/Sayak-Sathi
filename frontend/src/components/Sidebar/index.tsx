@@ -51,14 +51,14 @@ const Sidebar: React.FC<SideBarProps> = ({ children }) => {
 					key: "requests",
 					icon: <DiffOutlined />,
 					label: "Requests",
-					onClick: () => navigate(`/dashboard/requests`),
+					onClick: () => navigate(`/dashboard/userrequest`),
 				},
-				{
-					key: "signatures",
-					icon: <SignatureOutlined />,
-					label: "Signatures",
-					onClick: () => navigate(`/dashboard/signatures`),
-				}
+				// {
+				// 	key: "signatures",
+				// 	icon: <SignatureOutlined />,
+				// 	label: "Signatures",
+				// 	onClick: () => navigate(`/dashboard/signatures`),
+				// }
 			);
 		} else {
 			items.push({

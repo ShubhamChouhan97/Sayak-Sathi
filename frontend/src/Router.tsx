@@ -6,6 +6,7 @@ import RedirectByRole from "./components/RedirectByRole/index.tsx";
 import RoleProtectedRoute from "./components/RoleProtectedRoute.tsx/index.tsx";
 import { roles } from "./libs/constants.ts";
 import { Admin } from "./pages/Admin.tsx";
+import { Requests } from "./pages/Request.tsx";
 
 export function Router() {
 	return (
@@ -25,6 +26,7 @@ export function Router() {
 								/>
 							}
 						>
+							 <Route path="userrequest" element={<Requests />} />
 							{/* <Route path="requests" element={<Requests />} />
 							<Route
 								path="request/:id"
@@ -40,7 +42,7 @@ export function Router() {
 						<Route
 							element={<RoleProtectedRoute allowedRoles={[roles.admin]} />}
 						>
-						 <Route path="requests" element={<Admin />}/>
+						 <Route path="requests" element={<Requests />}/>
                          <Route path="admin" element={<Admin />} />
 							{/* <Route path="users" element={<Users />} /> */}
 							{/* <Route

@@ -1,0 +1,136 @@
+// const generateData = async (filePath) => {
+//   try {
+//     const absoluteFilePath = path.join(process.cwd(), filePath);
+//     console.log("Generating data for file:", absoluteFilePath);
+//     const form = new FormData();
+//     form.append("file", fs.createReadStream(absoluteFilePath));
+//     form.append("isOverlayRequired", "false");
+//     form.append("apikey", process.env.OCR_SPACE_API_KEY);
+//     form.append("language", "eng"); // Use 'eng+hin' if both
+
+//     const response = await axios.post("https://api.ocr.space/parse/image", form, {
+//       headers: {
+//         ...form.getHeaders(),
+//       },
+//       maxBodyLength: Infinity,
+//     });
+
+//     const parsedText = response.data?.ParsedResults?.[0]?.ParsedText;
+//      console.log("Parsed Text:", parsedText);
+//     if (!parsedText) {
+//       console.error("OCR failed to extract text.");
+//       return { success: false, message: "OCR failed" };
+//     }
+
+//     // Translate (if needed)
+//     const hindiTranslation = await translateText(parsedText, "hi");
+//     const englishTranslation = await translateText(parsedText, "en");
+
+//     // Categorize
+//     let category = "Uncategorized";
+//     const lowerText = parsedText.toLowerCase();
+//     if (lowerText.includes("electricity")) category = "Electricity";
+//     else if (lowerText.includes("road")) category = "Road";
+//     else if (lowerText.includes("water")) category = "Water";
+//     else if (lowerText.includes("school")) category = "Education";
+
+//     return {
+//       success: true,
+//       parsedText,
+//       hindiTranslation,
+//       englishTranslation,
+//       category,
+//     };
+//   } catch (err) {
+//     console.error("Error in generateData:", err.message);
+//     return { success: false, message: err.message };
+//   }
+// };
+
+
+//  readin g only ward image 
+// const generateData = async (fileRelativePath) => {
+//   try {
+//      const inputPath = path.resolve(process.cwd(), '.' + fileRelativePath); // dot handles leading `/`
+//     console.log("📄 Full PDF path:", inputPath);
+
+//     if (!fs.existsSync(inputPath)) {
+//       console.error("❌ File does not exist:", inputPath);
+//       throw new Error("Input PDF file not found.");
+//     }
+
+//     const outputDir = path.resolve(__dirname, '../output');
+//     if (!fs.existsSync(outputDir)) {
+//       fs.mkdirSync(outputDir, { recursive: true });
+//     }
+
+//     // 🔁 Clean old JPG files
+//     fs.readdirSync(outputDir).forEach(file => {
+//       if (file.endsWith('.jpg')) fs.unlinkSync(path.join(outputDir, file));
+//     });
+
+//     const pdftoppmPath = `"C:\\poppler-24.08.0\\Library\\bin\\pdftoppm.exe"`;
+
+//     // Windows-safe paths
+//     const outputPrefix = path.join(outputDir, 'page').replace(/\\/g, '/');
+//     const safeInputPath = inputPath.replace(/\\/g, '/');
+
+//     const command = `${pdftoppmPath} -jpeg -r 300 "${safeInputPath}" "${outputPrefix}"`;
+//     await execAsync(command);
+
+//     const imageFiles = fs.readdirSync(outputDir)
+//       .filter(file => file.endsWith('.jpg'))
+//       .map(file => path.join(outputDir, file));
+
+//     if (imageFiles.length === 0) {
+//       throw new Error("No images generated from PDF.");
+//     }
+
+//     // const worker = await createWorker('eng');
+//     const worker = await createWorker('eng+osd'); // Try also with 'script/Devanagari' if Hindi-like
+
+//     let fullText = '';
+
+//     for (const img of imageFiles) {
+//       const { data: { text } } = await worker.recognize(img);
+//       fullText += text + '\n';
+//     }
+
+//     await worker.terminate();
+//   console.log("✅ OCR Text Extracted:", fullText);
+//     const translatedHi = await translateText(fullText, 'hi');
+//     const translatedEn = await translateText(fullText, 'en');
+
+//     return {
+//       original: fullText,
+//       translations: {
+//         en: translatedEn,
+//         hi: translatedHi
+//       }
+//     };
+//   } catch (err) {
+//     console.error("❌ Error in generateData:", err.message);
+//     throw err;
+//   }
+// };
+
+// const translateText = async (text, targetLang) => {
+//   try {
+//     const res = await axios.post('https://libretranslate.de/translate', {
+//       q: text,
+//       source: 'auto',
+//       target: targetLang,
+//       format: 'text'
+//     }, {
+//       headers: { 'Content-Type': 'application/json' }
+//     });
+
+//     return res.data.translatedText;
+//   } catch (err) {
+//     console.error(`Translation error (${targetLang}):`, err.message);
+//     return "[Translation failed]";
+//   }
+// };
+
+// export default generateData;
+

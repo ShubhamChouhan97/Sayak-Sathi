@@ -8,3 +8,7 @@ export const status = {
     active: 1,
     pending: -1,
 }
+export const requestStatus = {
+   deleted: 0,
+    active: 1,
+}

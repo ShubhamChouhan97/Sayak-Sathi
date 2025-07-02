@@ -1,17 +1,5 @@
-// // made defult export of User component
-// import React from "react";
 
-
-// export const Requests: React.FC = () => {
-   
-//     return (
-//         <div className="flex justify-center items-center h-[90vh] w-full">
-//            <h1>Request Page</h1>
-//         </div>
-//     );
-// }
-
-// import React, { useState } from "react";
+// import React, { useState, useEffect } from "react";
 // import {
 //   Table,
 //   Button,
@@ -22,10 +10,13 @@
 //   Upload,
 //   message,
 //   Space,
+//   Spin,
 // } from "antd";
-// import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-// import type { UploadProps } from "antd/es/upload";
-// import type { RcFile } from "antd/es/upload";
+// import {
+//   PlusOutlined,
+// } from "@ant-design/icons";
+// import { createRequest,getRequest } from "../Api/Request"; // Adjust the import path as necessary
+
 
 // interface Request {
 //   id: number;
@@ -36,59 +27,73 @@
 //   status: "Draft" | "In Progress" | "Completed";
 // }
 
-// const mockData: Request[] = [
-//   {
-//     id: 1,
-//     name: "Sample Request 1",
-//     description: "Initial draft for review",
-//     createdAt: "2024-01-15",
-//     documentCount: 5,
-//     status: "Draft",
-//   },
-//   {
-//     id: 2,
-//     name: "Sample Request 2",
-//     description: "Quarterly report submission",
-//     createdAt: "2024-02-20",
-//     documentCount: 3,
-//     status: "In Progress",
-//   },
-// ];
-
 // export const Requests: React.FC = () => {
-//   const [data, setData] = useState(mockData);
+//   const [data, setData] = useState<Request[]>([]);
+//   const [loading, setLoading] = useState<boolean>(true);
 //   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 //   const [form] = Form.useForm();
 
+//   //  Simulated server fetch (replace with real API)
+//   const fetchRequests = async () => {
+//     setLoading(true);
+//     try {
+//       const data = await getRequest(); // ← replace with your endpoint
+//       console.log("Fetched requests:", data);
+//       setData(data);
+//     } catch (err) {
+//       message.error("No Data Found");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchRequests();
+//   }, []);
+
 //   const showDrawer = () => setIsDrawerOpen(true);
+
 //   const closeDrawer = () => {
 //     form.resetFields();
 //     setIsDrawerOpen(false);
 //   };
 
-//   const onFinish = (values: any) => {
-//     const newRequest: Request = {
-//       id: data.length + 1,
-//       name: values.name,
-//       description: values.description,
-//       createdAt: new Date().toISOString().split("T")[0],
-//       documentCount: 1,
-//       status: "Draft",
-//     };
-//     setData([newRequest, ...data]);
+// const onFinish = async (values: any) => {
+//   const file = values.file?.[0];
+
+//   if (!file) {
+//     message.error("No file selected");
+//     return;
+//   }
+
+//   const formData = new FormData();
+//   formData.append("name", values.name);
+//   formData.append("description", values.description);
+//   formData.append("file", file);
+
+//   try {
+//     await createRequest(formData);
+//      fetchRequests();
 //     message.success("New request added");
 //     closeDrawer();
+//   } catch (error) {
+//     console.error("Request creation failed:", error);
+//     message.error("Failed to create request");
+//   }
+// };
+
+
+//   const handlePreview = (record: Request) => {
+//     message.info(`Preview: ${record.name}`);
 //   };
 
-//   const fileProps: UploadProps = {
-//     beforeUpload: (file: RcFile) => {
-//       const isPDF = file.type === "application/pdf";
-//       if (!isPDF) {
-//         message.error("Only PDF files are allowed!");
-//       }
-//       return isPDF || Upload.LIST_IGNORE;
-//     },
-//     maxCount: 1,
+//   const handleGenerate = (record: Request) => {
+//     message.success(`Generated document for: ${record.name}`);
+//   };
+
+//   const handleDelete = (id: number) => {
+//     setData(prev => prev.filter(req => req.id !== id));
+//     message.success("Request deleted successfully");
 //   };
 
 //   const columns = [
@@ -134,54 +139,72 @@
 //         return <Tag color={color}>{status}</Tag>;
 //       },
 //     },
-//    {
-//   title: "Action",
-//   key: "action",
-//   render: (_, record: Request) => (
-//     <div>
-//       <Space direction="horizontal" size="middle" wrap>
-//         <Button type="primary" size="small" onClick={() => handlePreview(record)}>
-//           Preview
-//         </Button>
-//         <Button type="default" size="small" onClick={() => handleGenerate(record)}>
-//           Generate
-//         </Button>
-//         <Button type="primary" danger size="small" onClick={() => handleDelete(record.id)}>
-//           Delete
-//         </Button>
-//       </Space>
-//     </div>
-//   ),
-// },
+//     {
+//       title: "Action",
+//       key: "action",
+//       render: (_: any, record: Request) => (
+//         <div className="border border-gray-300 rounded-md p-2 w-fit bg-white shadow-sm">
+//           <Space direction="horizontal" size="middle" wrap>
+//             <Button
+//               type="primary"
+//               size="small"
+//               onClick={() => handlePreview(record)}
+//             >
+//               Preview
+//             </Button>
+//             <Button
+//               type="default"
+//               size="small"
+//               onClick={() => handleGenerate(record)}
+//             >
+//               Generate
+//             </Button>
+//             <Button
+//               type="primary"
+//               danger
+//               size="small"
+//               onClick={() => handleDelete(record.id)}
+//             >
+//               Delete
+//             </Button>
+//           </Space>
+//         </div>
+//       ),
+//     },
 //   ];
+
 
 //   return (
 //     <div className="p-6">
-//       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-//         <h2 className="text-2xl font-bold mb-2 sm:mb-0">Requests</h2>
+//       <div className="flex justify-between items-center mb-4">
+//         <h2 className="text-2xl font-bold">Requests</h2>
 //         <Button
 //           type="primary"
 //           icon={<PlusOutlined />}
 //           onClick={showDrawer}
-//           className="self-end"
 //         >
 //           New Request
 //         </Button>
 //       </div>
 
-//       <Table
-//         dataSource={data}
-//         columns={columns}
-//         rowKey="id"
-//         pagination={{ pageSize: 5 }}
-//         scroll={{ x: 'max-content' }}
-//       />
+//       {loading ? (
+//         <div className="flex justify-center items-center h-60">
+//           <Spin tip="Loading requests..." size="large" />
+//         </div>
+//       ) : (
+//         <Table
+//           dataSource={data}
+//           columns={columns}
+//           rowKey="id"
+//           scroll={{ x: "max-content" }}
+//         />
+//       )}
 
 //       <Drawer
 //         title="New Request"
 //         width={400}
 //         onClose={closeDrawer}
-//         open={isDrawerOpen}
+//         visible={isDrawerOpen}
 //         destroyOnClose
 //       >
 //         <Form layout="vertical" form={form} onFinish={onFinish}>
@@ -196,22 +219,28 @@
 //           <Form.Item
 //             name="description"
 //             label="Description"
-//             rules={[{ required: true, message: "Please enter a description" }]}
+//             rules={[
+//               { required: true, message: "Please enter a description" },
+//             ]}
 //           >
 //             <Input.TextArea rows={3} />
 //           </Form.Item>
 
-//           <Form.Item
-//             name="file"
-//             label="Upload PDF"
-//             valuePropName="fileList"
-//             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-//             rules={[{ required: true, message: "Please upload a PDF file" }]}
-//           >
-//             <Upload {...fileProps}>
-//               <Button icon={<UploadOutlined />}>Click to Upload PDF</Button>
-//             </Upload>
-//           </Form.Item>
+//       <Form.Item
+//   name="file"
+//   label="Upload PDF"
+//   rules={[{ required: true, message: "Please upload a PDF file" }]}
+//  valuePropName="files"
+//   getValueFromEvent={(e) => e.target.files}
+// >
+//   <input
+//     type="file"
+//     accept="application/pdf"
+//     className="block w-full border px-2 py-1"
+//   />
+// </Form.Item>
+
+
 
 //           <Form.Item>
 //             <div className="flex justify-end gap-2">
@@ -239,16 +268,19 @@ import {
   message,
   Space,
   Spin,
+  Modal
 } from "antd";
-import {
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import type { UploadProps } from "antd/es/upload";
-import type { RcFile } from "antd/es/upload";
+import { useAppStore } from "../store";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { createRequest, getRequest,deleteRequest,previewRequestTemplate,generateRequest } from "../Api/Request"; // Adjust path
+import { io } from 'socket.io-client';
+
+const socket = io("http://localhost:3000", {
+  withCredentials: true
+});
 
 interface Request {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   createdAt: string;
@@ -261,16 +293,63 @@ export const Requests: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<any[]>([]);
 
-  // 🟡 Simulated server fetch (replace with real API)
+const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+ const [previewModal,setPreviewModal] = useState(false);
+ const [previewRequest ,setPreviewRequest] = useState('');
+ const [loadvar, setLoadvar] = useState(0);
+
+  const session = useAppStore().session;
+  const myId = useAppStore().session?.userId;
+  console.log("Session ID:", myId);
+
+ // socket
+//   useEffect(() => {
+//     // socket.on('request-statusUpdate', (data) => {
+//     //   if (myId === data.yourId) {
+//     //     setLoadvar((prev) => prev + 1);
+//     //   }
+//     // });
+
+//     socket.on('request-statusUpdate', (data) => {
+//   if (myId === data.yourId) {
+//     setLoadvar((prev) => prev + 1);
+//   }
+// });
+
+
+//     return () => {
+//       socket.off('request-statusUpdate');
+//     };
+//   }, [myId]);
+
+useEffect(() => {
+  if (!myId) {
+    return;
+  }
+
+  const handleStatusUpdate = (data: any) => {
+    if (data.yourId === myId) {
+      setLoadvar(prev => prev + 1);
+    }
+  };
+
+  socket.on('request-statusUpdate', handleStatusUpdate);
+  return () => {
+    socket.off('request-statusUpdate', handleStatusUpdate);
+  };
+}, [myId]);
+
+
+
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/requests"); // ← replace with your endpoint
-      const result = await response.json();
-      setData(result);
+      const data = await getRequest();
+      setData(data);
     } catch (err) {
-      message.error("Failed to fetch requests from server");
+      message.error("No Data Found");
     } finally {
       setLoading(false);
     }
@@ -278,59 +357,106 @@ export const Requests: React.FC = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [loadvar]);
 
   const showDrawer = () => setIsDrawerOpen(true);
 
   const closeDrawer = () => {
     form.resetFields();
+    setFileList([]);
     setIsDrawerOpen(false);
   };
 
-  const onFinish = (values: any) => {
-    const newRequest: Request = {
-      id: data.length + 1,
-      name: values.name,
-      description: values.description,
-      createdAt: new Date().toISOString().split("T")[0],
-      documentCount: 1,
-      status: "Draft",
-    };
-    setData([newRequest, ...data]);
-    message.success("New request added");
-    closeDrawer();
+  const onFinish = async (values: any) => {
+    if (!fileList.length) {
+      message.error("Please upload a PDF file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    formData.append("file", fileList[0]);
+
+    try {
+      await createRequest(formData);
+      fetchRequests();
+      message.success("New request added");
+      closeDrawer();
+    } catch (error) {
+      console.error("Request creation failed:", error);
+      message.error("Failed to create request");
+    }
   };
 
-  const handlePreview = (record: Request) => {
-    message.info(`Preview: ${record.name}`);
+  const beforeUpload = (file: File) => {
+    const isPdf = file.type === "application/pdf";
+    if (!isPdf) {
+      message.error("Only PDF files are allowed!");
+      return Upload.LIST_IGNORE;
+    }
+    setFileList([file]); // Only one file
+    return false; // prevent auto upload
   };
 
-  const handleGenerate = (record: Request) => {
-    message.success(`Generated document for: ${record.name}`);
+  const handleRemove = () => {
+    setFileList([]);
   };
 
-  const handleDelete = (id: number) => {
-    setData(prev => prev.filter(req => req.id !== id));
-    message.success("Request deleted successfully");
+  const handleDelete = async (id: string) => {
+    const response = await deleteRequest(id.toString());
+    if (response.status !== 200) {
+      message.error("Failed to delete request");
+      return;
+    }
+    else{
+     fetchRequests();
+     message.success("Request deleted successfully");
+    }
+    
+ 
   };
 
-  const fileProps: UploadProps = {
-    beforeUpload: (file: RcFile) => {
-      const isPDF = file.type === "application/pdf";
-      if (!isPDF) {
-        message.error("Only PDF files are allowed!");
-      }
-      return isPDF || Upload.LIST_IGNORE;
-    },
-    maxCount: 1,
+  const handlePreview = async (requestId :string,name:string) => {
+    setPreviewRequest(name);
+    setPreviewModal(true);
+    setLoading(true);
+    try {
+      const blob = await previewRequestTemplate(requestId);
+      const url = window.URL.createObjectURL(blob);
+      setPreviewUrl(url);
+    } catch (err) {
+      console.error("Error downloading template:", err);
+      message.error("Something went wrong while opening the template.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+
+
+  const handleGenerate = async (requestId:string) => {
+ try{
+ const response = await generateRequest(requestId);
+ if(response.status === 200){
+  message.success("Request generated successfully");
+  fetchRequests();
+  }else{
+  message.error("Failed to generate request");
+  }
+ }catch{
+    message.error("Failed to generate document");
+ }
+
   };
 
   const columns = [
-    {
-      title: "Request No.",
-      dataIndex: "id",
-      key: "id",
-    },
+     {
+    title: "Request No.",
+    key: "serial",
+    render: (_: any, __: Request, index: number) => index + 1,
+  },
     {
       title: "Request Name",
       dataIndex: "name",
@@ -344,15 +470,28 @@ export const Requests: React.FC = () => {
       dataIndex: "description",
       key: "description",
     },
-    {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
+   {
+  title: "Created At",
+  dataIndex: "createdAt",
+  key: "createdAt",
+  render: (createdAt: string) => (
+    new Date(createdAt).toLocaleString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+  ),
+},
     {
       title: "Document Count",
       dataIndex: "documentCount",
       key: "documentCount",
+      render: (text: string) => (
+        <span className="text-blue-600 cursor-pointer">{text}</span>
+      )
     },
     {
       title: "Status",
@@ -373,51 +512,21 @@ export const Requests: React.FC = () => {
       key: "action",
       render: (_: any, record: Request) => (
         <div className="border border-gray-300 rounded-md p-2 w-fit bg-white shadow-sm">
-          <Space direction="horizontal" size="middle" wrap>
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => handlePreview(record)}
-            >
-              Preview
-            </Button>
-            <Button
-              type="default"
-              size="small"
-              onClick={() => handleGenerate(record)}
-            >
-              Generate
-            </Button>
-            <Button
-              type="primary"
-              danger
-              size="small"
-              onClick={() => handleDelete(record.id)}
-            >
-              Delete
-            </Button>
+          <Space>
+            <Button type="primary" size="small" onClick={() => handlePreview(record._id,record.name)}>Preview</Button>
+            <Button size="small" onClick={() => handleGenerate(record._id)}>Generate</Button>
+            <Button danger size="small" onClick={() => handleDelete(record._id)}>Delete</Button>
           </Space>
         </div>
       ),
     },
   ];
 
- const RequestSubmit = (values: any)=>{
-    // try{
-        
-    // }
-
- }
-
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Requests</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={showDrawer}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={showDrawer}>
           New Request
         </Button>
       </div>
@@ -427,12 +536,7 @@ export const Requests: React.FC = () => {
           <Spin tip="Loading requests..." size="large" />
         </div>
       ) : (
-        <Table
-          dataSource={data}
-          columns={columns}
-          rowKey="id"
-          scroll={{ x: "max-content" }}
-        />
+        <Table dataSource={data} columns={columns} rowKey="id" scroll={{ x: "max-content" }} />
       )}
 
       <Drawer
@@ -454,9 +558,7 @@ export const Requests: React.FC = () => {
           <Form.Item
             name="description"
             label="Description"
-            rules={[
-              { required: true, message: "Please enter a description" },
-            ]}
+            rules={[{ required: true, message: "Please enter a description" }]}
           >
             <Input.TextArea rows={3} />
           </Form.Item>
@@ -464,30 +566,50 @@ export const Requests: React.FC = () => {
           <Form.Item
             name="file"
             label="Upload PDF"
-            valuePropName="fileList"
-            getValueFromEvent={(e) =>
-              Array.isArray(e) ? e : e?.fileList
-            }
-            rules={[
-              { required: true, message: "Please upload a PDF file" },
-            ]}
+            rules={[{ required: true, message: "Please upload a PDF file" }]}
           >
-            <Upload {...fileProps}>
-              <Button icon={<UploadOutlined />}>Click to Upload PDF</Button>
+            <Upload
+              beforeUpload={beforeUpload}
+              onRemove={handleRemove}
+              fileList={fileList}
+              accept=".pdf"
+              maxCount={1}
+              multiple={false}
+            >
+              <Button icon={<UploadOutlined />}>Select PDF</Button>
             </Upload>
           </Form.Item>
 
           <Form.Item>
             <div className="flex justify-end gap-2">
               <Button onClick={closeDrawer}>Cancel</Button>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
+              <Button type="primary" htmlType="submit">Submit</Button>
             </div>
           </Form.Item>
         </Form>
       </Drawer>
+      <Modal
+      open={previewModal}
+       onCancel={() => { setPreviewModal(false); setPreviewUrl(null); }}
+        title={`Preview Request: ${previewRequest}`}
+				footer={null}
+				width="80%"
+				centered
+				bodyStyle={{ height: "80vh", padding: 0 }}>
+      {loading ? (
+       <div className="flex justify-center items-center h-[80vh]">
+       <Spin tip="Loading Preview..." size="large" />
+      </div>
+      ) : previewUrl ? (
+       <div className="mt-4 w-full h-[80vh] border">
+       <iframe
+      src={previewUrl}
+      title="Document Preview"
+      className="w-full h-full"
+       />
+     </div>
+      ) : null}
+     </Modal>
     </div>
   );
 };
-

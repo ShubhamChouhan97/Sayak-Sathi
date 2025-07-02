@@ -1,20 +1,46 @@
 {
   "type": "module",
   "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/translate": "^9.1.0",
+    "@google-cloud/vision": "^5.2.0",
+    "@google/generative-ai": "^0.24.1",
+    "@vitalets/google-translate-api": "^9.2.1",
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.6.0",
+    "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "form-data": "^4.0.3",
     "helmet": "^8.1.0",
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
-    "nodemailer": "^7.0.3"
+    "node-poppler": "^8.0.1",
+    "nodemailer": "^7.0.3",
+    "openai": "^5.8.2",
+    "pdf-lib": "^1.17.1",
+    "pdf-poppler": "^0.2.1",
+    "pdf2pic": "^3.2.0",
+    "sharp": "^0.34.2",
+    "socket.io": "^4.8.1",
+    "tesseract.js": "^6.0.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

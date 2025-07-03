@@ -53,22 +53,20 @@ export function createSocketServer(server, sessionMiddleware) {
   });
 
   io.on("connection", (socket) => {
-    console.log("✅ New socket connection:", socket.id);
+    console.log(" New socket connection:", socket.id);
 
     const session = socket.request.session;
 
     if (!session?.userId) {
-      console.log("❌ No session.userId found, disconnecting...");
+      console.log(" No session.userId found, disconnecting...");
       return socket.disconnect();
     }
 
-    console.log("🔐 User authenticated with session.userId:", session.userId);
+    console.log(" User authenticated with session.userId:", session.userId);
 
     // Optionally join room based on userId for private emits
     socket.join(session.userId);
 
-    // Add your events here
-    // socket.on("event-name", (payload) => { ... });
   });
 
   return io;

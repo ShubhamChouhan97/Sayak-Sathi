@@ -11,6 +11,9 @@ import Request from "../models/Request.js";
 
 export const saveAnalyzedDocumentsToDB = async (reqId, analyzedDocs) => {
   try {
+      console.log("ama",analyzedDocs)
+    const request = await Request.findById(reqId);
+
     if (!analyzedDocs || !Array.isArray(analyzedDocs) || analyzedDocs.length === 0) {
       console.log("No documents to save.");
       return;
@@ -20,7 +23,10 @@ export const saveAnalyzedDocumentsToDB = async (reqId, analyzedDocs) => {
 
     for (const doc of analyzedDocs) {
       const newDoc = new Document({
-        name: doc.name,
+        requestId:reqId,
+        requsetName: request.name,
+        docname: doc.name,
+        nameInHindi: doc.nameInHindi,
         wardNumber: doc.wardNumber,
         phoneNumber: doc.phoneNumber || '',
         countryCode: doc.countryCode || '+91',
@@ -30,14 +36,13 @@ export const saveAnalyzedDocumentsToDB = async (reqId, analyzedDocs) => {
       });
 
       const savedDoc = await newDoc.save();
+   // save doc id to request
+   request.documentsId.push(savedDoc._id);
+     await request.save();
       savedDocuments.push(savedDoc);
     }
 
-    // Optionally, update the Request with associated document references (if desired)
-    // await Request.findByIdAndUpdate(reqId, {
-    //   $push: { documents: { $each: savedDocuments.map(d => d._id) } } // If you have a 'documents' field
-    // });
-
+    
     console.log("Documents saved successfully.");
   } catch (err) {
     console.error("Error saving analyzed documents:", err);

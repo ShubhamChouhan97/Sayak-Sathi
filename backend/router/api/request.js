@@ -4,7 +4,9 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { newrequest,getrequest,deleteRequest,previewRequest,generateRequest } from "../../controller/requestcontroller.js";
+import { newrequest,getrequest,deleteRequest,previewRequest,
+  generateRequest,RequestDocumentDetails,DocumentDetails,
+  downloadDocument,RequestReport } from "../../controller/requestcontroller.js";
 
 const router = Router();
 
@@ -51,4 +53,8 @@ router.get('/getrequest',getrequest); // Assuming you have a getRequest function
 router.delete('/deleterequest/:id',deleteRequest); // Assuming you have a deleteRequest function in your controller
 router.post('/previewRequest',previewRequest);
 router.post('/generateRequest',generateRequest);
+router.post('/RequestDocumentDetails',RequestDocumentDetails);
+router.post('/DocumentDetails',DocumentDetails);
+router.post('/downloadDocument',downloadDocument);
+router.post('/RequestReport',RequestReport);
 export default router;

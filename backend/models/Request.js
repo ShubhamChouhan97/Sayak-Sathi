@@ -36,7 +36,8 @@ const requestSchema = new mongoose.Schema(
     deleteStatus:{
       type:Number,
      required:true, // 0 for not deleted, 1 for deleted
-    }
+    },
+    documentsId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
   },
   { timestamps: true }
 );

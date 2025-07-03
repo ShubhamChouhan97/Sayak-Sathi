@@ -20,20 +20,20 @@ export const analyzeComplaintImages = async (imagePaths = []) => {
     const prompt = `
 You are analyzing scanned pages of complaints. 
 For each page, extract:
-- name
+- name :where you need to write name in english that does not mater in page name is writen in which language you need to write name in english.
 - ward number
 - phone number
-- issues: array of unique problem fields from each problem
+- issues: array of unique problem fields from each problem return in English language.
 - problems: array of objects , object for each marked problem, each having its category specified and has 
     problem written in both english and hindi languages, in the description field, such as : 
   - category: "water", "electricity", "garbage", "pollution", "roads", "general"
   - description: { english: "...", hindi: "..." }
-
+- in name you need to write name in english and in nameInhindi you need to write name in hindi and in nameInhindi you need to write name in hindi
 Return as JSON array like:
-
 [
   {
     "name": "...",
+    "nameInHindi": "...",
     "wardNumber": "...",
     "phoneNumber": "...",
     "issues": [...],
@@ -47,6 +47,7 @@ Return as JSON array like:
     ]
   }
 ]
+
 `;
 
     const result = await model.generateContent({

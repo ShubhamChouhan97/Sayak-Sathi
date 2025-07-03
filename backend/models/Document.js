@@ -1,8 +1,21 @@
 import mongoose from "mongoose";
 
 const DocumentSchema = new mongoose.Schema({
-  name: {
+  docname: {
     type: String,
+    required: true,
+  },
+  nameInHindi:{
+    type: String,
+    required: true,
+  },
+  requestId: {
+     type: mongoose.Schema.Types.ObjectId,
+      ref: "Request",
+    required: true,
+  },
+  requsetName:{
+    type:String,
     required: true,
   },
   wardNumber: {

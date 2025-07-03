@@ -10,17 +10,17 @@ You are an expert analyst. Given the following complaint documents from villager
 1. commonProblems: List of problems that multiple people reported.
    Each item should include:
    - problem: 20 words English title
-   - category
-   - count: how many people reported it
+   - category:provide problem related category one or more categories
    - reporters: array of people who reported it (with docname, wardNumber,_id)
+   - count: count of reporters
 
 2. wardWiseProblems: For each unique wardNumber:
    - ward: ward number
    - problems: array of problems with:
-     - problem: short English title
-     - category
-     - count: how many people in this ward reported it
+     - problem: 20 ward English title
+     - category:provide problem related category one or more categories
      - reporters: array of { docname and thier _id}
+     - count: count of reporters
 
 3. analytics: An array of each ward with:
    - ward: ward number

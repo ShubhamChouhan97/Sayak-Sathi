@@ -38,6 +38,9 @@ const requestSchema = new mongoose.Schema(
      required:true, // 0 for not deleted, 1 for deleted
     },
     documentsId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
+    reportId:{
+      type: mongoose.Schema.Types.ObjectId, ref: "Report"
+    }
   },
   { timestamps: true }
 );

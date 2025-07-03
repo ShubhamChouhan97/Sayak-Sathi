@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { PDFDocument } from "pdf-lib";
 import Request from "../models/Request.js";
+import Report from "../models/Report.js";
 import  Document from "../models/Document.js";
 import { requestStatus } from '../constants/index.js';
 import { fileURLToPath } from "url";
@@ -155,6 +156,7 @@ console.log(" Final OCR & Translations:", result);
 
   }
 }
+// genertae data dcoucmnets and report file 
 const generateData = async (requestId, createdBy) => {
   try {
     const request = await Request.findById(requestId);
@@ -185,9 +187,26 @@ const generateData = async (requestId, createdBy) => {
     console.log("Analysis result saved:", result);
 
     // Update request status to Completed
-    request.status = "Completed";
+    
     await request.save();
+//  Clean up: delete the output directory after processing
+    fs.rmSync(outputDir, { recursive: true, force: true });
+    console.log(" directory cleaned up:", outputDir);
 
+    try{
+     const documents = await Document.find({ requestId: requestId }).lean();
+    const safeDocuments = JSON.parse(JSON.stringify(documents));
+
+   //  console.log("documents found", safeDocuments);
+      const aiReport =  await analysisReportAI(safeDocuments);
+    console.log("data",aiReport);
+       await saveReportToDB(requestId, aiReport);
+  } catch (error) {
+    console.error(" ERROR in RequestReport:", error.message);
+    console.error(error.stack);
+  }
+     request.status = "Completed";
+     await request.save();
     // Emit socket update to client
     io.to(request.createdBy.toString()).emit('request-statusUpdate', {
       _id: request._id,
@@ -199,12 +218,6 @@ const generateData = async (requestId, createdBy) => {
     });
 
     console.log("Request status updated to Completed");
-
-    //  Clean up: delete the output directory after processing
-    fs.rmSync(outputDir, { recursive: true, force: true });
-    console.log(" directory cleaned up:", outputDir);
-
-
   } catch (error) {
     console.error(" Error in generateData:", error);
   }
@@ -266,21 +279,16 @@ export const downloadDocument = async (req, res) => {
 export const RequestReport = async (req, res) => {
     const { requestId } = req.body;
     console.log("Request ID:", requestId);
-    try{
-    //  const request = await Request.findById(requestId);
-    // const documents = await Request.findById(requestId).lean();
-     const documents = await Document.find({ requestId: requestId }).lean();
-// Optional: deep convert ObjectId and Date
-const safeDocuments = JSON.parse(JSON.stringify(documents));
+   try{
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+    const reportid =  request.reportId;
+    const report = await Report.findById(reportid);
+    res.json(report);
 
-   //  console.log("documents found", safeDocuments);
-      const aiReport =  await analysisReportAI(safeDocuments);
-    console.log("data",aiReport);
-       await saveReportToDB(requestId, aiReport);
-       res.status(200).json({ report: aiReport });
-  } catch (error) {
-    console.error(" ERROR in RequestReport:", error.message);
-    console.error(error.stack);
-    res.status(500).send("Failed to generate report");
-  }
+   }catch{
+    return res.status(500).json({ message: "Error fetching request report" });
+   }
 }

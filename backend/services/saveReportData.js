@@ -1,6 +1,6 @@
 import Report from "../models/Report.js";
 import mongoose from "mongoose";
-
+import Request from "../models/Request.js";
 export const saveReportToDB = async (requestId, aiReport) => {
   try {
     // 1. Initial check for overall AI Report data
@@ -92,6 +92,8 @@ export const saveReportToDB = async (requestId, aiReport) => {
     });
 
     await newReport.save();
+    //save this report id to requests collection
+    const request = await Request.findByIdAndUpdate(requestId, { $set: { reportId: newReport.id } });
     console.log("Report successfully saved to MongoDB");
   } catch (error) {
     console.error(" Failed to save report:", error.message);

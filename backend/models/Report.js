@@ -12,10 +12,12 @@ const reportSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        category: {
-          type: String,
-          required: true,
-        },
+        category: [
+          {
+            type: String,
+            required: true,
+          },
+        ],
         count: {
           type: Number,
           required: true,
@@ -50,10 +52,10 @@ const reportSchema = new mongoose.Schema(
               type: String,
               required: true,
             },
-            category: {
+            category: [{
               type: String,
               required: true,
-            },
+            }],
             count: {
               type: Number,
               required: true,

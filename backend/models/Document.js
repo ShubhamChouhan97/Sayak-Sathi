@@ -20,7 +20,7 @@ const DocumentSchema = new mongoose.Schema({
   },
   wardNumber: {
     type: String,
-    required: true,
+    // required: true,
   },
   phoneNumber: {
     type: String,

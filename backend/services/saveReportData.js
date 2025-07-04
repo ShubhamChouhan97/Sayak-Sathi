@@ -74,7 +74,8 @@ export const saveReportToDB = async (requestId, aiReport) => {
       }
       return {
         ward: a.ward,
-        totalProblems: a.totalProblems
+        totalProblems: a.totalProblems,
+        categories:a.categories
       };
     }).filter(Boolean);
 

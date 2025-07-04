@@ -19,12 +19,13 @@ You are an expert analyst. Given the following complaint documents from villager
    - problems: array of problems with:
      - problem: 20 ward English title
      - category:provide problem related category one or more categories
-     - reporters: array of { docname and thier _id}
+     - reporters: array of { docname and thier _id,wardNumber, All Problems in hindi and english  }
      - count: count of reporters
 
 3. analytics: An array of each ward with:
    - ward: ward number
    - totalProblems: total number of individual problems reported in that ward
+   - categories: array of categories of problems reported in that ward and total problem count for each category
 
 Use the following documents:
 ${JSON.stringify(document, null, 2)}
@@ -43,12 +44,12 @@ Return result in JSON only.
     let parsed;
     try {
         parsed = JSON.parse(cleaned);
-       // console.log("Parsed AI output:", parsed);
+       console.log("Parsed AI output:", parsed);
     } catch (err) {
         console.error("Failed to parse Gemini response:", err.message);
         throw err;
     }
-
+    console.log("AI Analysis Completed: ", parsed);
     return parsed;
   } catch (err) {
     console.error(" Gemini error:", err.message);

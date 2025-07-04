@@ -28,7 +28,7 @@ For each page, extract:
     problem written in both english and hindi languages, in the description field, such as : 
   - category: "water", "electricity", "garbage", "pollution", "roads", "general"
   - description: { english: "...", hindi: "..." }
-- in name you need to write name in english and in nameInhindi you need to write name in hindi and in nameInhindi you need to write name in hindi
+- in name you need to write name in english and in nameInhindi you need to write name in hindi and in nameInhindi you need to write name in hindi if it is not present then convert english name to hindi
 Return as JSON array like:
 [
   {

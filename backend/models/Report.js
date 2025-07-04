@@ -86,6 +86,18 @@ const reportSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        categories:[
+          {
+            category: {
+              type: String,
+              required: true,
+            },
+            count: {
+              type: Number,
+              required: true,
+            },
+          }
+        ]
       },
     ],
   },

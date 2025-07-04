@@ -249,6 +249,33 @@ export const DocumentDetails = async (req, res) => {
   }
 
 }
+// export const downloadDocument = async (req, res) => {
+//   const { requestId } = req.body;
+
+//   try {
+//     const request = await Request.findById(requestId);
+//     if (!request) {
+//       return res.status(404).json({ error: "Request not found." });
+//     }
+
+//     const fileRelativePath = request.uploadedFileUrl;
+//     if (!fileRelativePath) {
+//       return res.status(400).json({ error: "No template file associated with this request" });
+//     }
+
+//     const filePath = path.join(process.cwd(), fileRelativePath.replace(/\\/g, "/"));
+//     const fileBuffer = await fs.readFile(filePath);
+
+//     res.setHeader('Content-Type', 'application/pdf');
+//     res.setHeader('Content-Disposition', `attachment; filename="${request.name || 'document.pdf'}"`);
+//     res.send(fileBuffer);
+
+//   } catch (err) {
+//     console.error("Download error:", err);
+//     res.status(500).json({ message: "Error downloading document" });
+//   }
+// };
+
 export const downloadDocument = async (req, res) => {
   const { requestId } = req.body;
 
@@ -264,7 +291,17 @@ export const downloadDocument = async (req, res) => {
     }
 
     const filePath = path.join(process.cwd(), fileRelativePath.replace(/\\/g, "/"));
-    const fileBuffer = await fs.readFile(filePath);
+    console.log("Attempting to read file from:", filePath); // Debugging line
+
+    // Wrap fs.readFile in a Promise
+    const fileBuffer = await new Promise((resolve, reject) => {
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(data);
+      });
+    });
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${request.name || 'document.pdf'}"`);

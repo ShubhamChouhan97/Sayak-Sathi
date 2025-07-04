@@ -29,6 +29,8 @@ export const saveReportToDB = async (requestId, aiReport) => {
             docname: rep.docname,
             wardNumber: rep.wardNumber,
             id: new mongoose.Types.ObjectId(rep._id || rep.id),
+            phoneNumber:rep.phoneNumber,
+            commonproblems:rep.problems,
           };
         }).filter(Boolean)
       };
@@ -58,7 +60,10 @@ export const saveReportToDB = async (requestId, aiReport) => {
               }
               return {
                 docname: rep.docname,
+                wardNumber: rep.wardNumber,
                 id: new mongoose.Types.ObjectId(rep._id || rep.id),
+                phoneNumber:rep.phoneNumber,
+                commonproblems:rep.problems,
               };
             }).filter(Boolean)
           };

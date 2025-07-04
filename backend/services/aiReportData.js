@@ -11,7 +11,7 @@ You are an expert analyst. Given the following complaint documents from villager
    Each item should include:
    - problem: 20 words English title
    - category:provide problem related category one or more categories
-   - reporters: array of people who reported it (with docname, wardNumber,_id)
+   - reporters: array of people who reported it (with docname, wardNumber,_id,phoneNumber,problems )
    - count: count of reporters
 
 2. wardWiseProblems: For each unique wardNumber:
@@ -19,7 +19,7 @@ You are an expert analyst. Given the following complaint documents from villager
    - problems: array of problems with:
      - problem: 20 ward English title
      - category:provide problem related category one or more categories
-     - reporters: array of { docname and thier _id,wardNumber, All Problems in hindi and english  }
+     - reporters: array of { docname and thier _id,wardNumber,phoneNumber,problems }
      - count: count of reporters
 
 3. analytics: An array of each ward with:

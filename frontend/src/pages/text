@@ -1,0 +1,797 @@
+
+// requestpage code
+
+// import React, { useState, useEffect } from "react";
+// import { useParams } from "react-router-dom";
+// import { fetchRequestReport } from "../Api/ReportPage";
+// import ProblemChart from "../components/chart";
+// import { Modal } from "antd";
+
+// interface CommonPro {
+//   category: string[];
+//   description: {
+//     english: string;
+//     hindi: string;
+//   };
+// }
+
+
+// interface Reporter {
+//   docname: string;
+//   wardNumber?: string;
+//   id: string;
+//   commonproblems: CommonPro[];
+// }
+
+// interface CommonProblem {
+//   problem: string;
+//   category: string;
+//   count: number;
+//   reporters: Reporter[];
+// }
+
+// interface WardProblem {
+//   ward: number;
+//   problems: {
+//     problem: string;
+//     category: string;
+//     count: number;
+//     reporters: Reporter[];
+//   }[];
+// }
+
+// interface Analytics {
+//   ward: number;
+//   totalProblems: number;
+//   categories: Array<any>;
+// }
+
+// export const ReportPage = () => {
+//   const { requestId } = useParams<{ requestId: string }>();
+//   const [activeTab, setActiveTab] = useState("common");
+//   const [reportData, setReportData] = useState<{
+//     commonProblems: CommonProblem[];
+//     wardWiseProblems: WardProblem[];
+//     analytics: Analytics[];
+//   } | null>(null);
+
+//   const [expandedWards, setExpandedWards] = useState<Record<string, boolean>>({});
+//   const [isModalVisible, setIsModalVisible] = useState(false);
+//   const [selectedReporters, setSelectedReporters] = useState<Reporter[]>([]);
+//   const [modalTitle, setModalTitle] = useState("");
+
+//   const toggleWard = (wardNo: string) => {
+//     setExpandedWards((prev) => ({ ...prev, [wardNo]: !prev[wardNo] }));
+//   };
+
+//   const showModal = (reporters: Reporter[], title: string) => {
+//     setSelectedReporters(reporters);
+//     setModalTitle(title);
+//     setIsModalVisible(true);
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       if (requestId) {
+//         const data = await fetchRequestReport(requestId);
+//         setReportData(data);
+//       }
+//     };
+//     fetchData();
+//   }, [requestId]);
+
+//   const tabs = [
+//     { key: "common", label: "Common Problems" },
+//     { key: "ward", label: "Ward Wise Report" },
+//     { key: "analysis", label: "Analysis" },
+//   ];
+
+//   return (
+//     <div className="w-full max-w-7xl mx-auto px-6 py-8 font-sans">
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-3xl font-bold text-gray-800">Report</h2>
+//         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+//           Print
+//         </button>
+//       </div>
+
+//       <div className="flex gap-4 mb-8">
+//         {tabs.map((tab) => (
+//           <button
+//             key={tab.key}
+//             onClick={() => setActiveTab(tab.key)}
+//             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+//               activeTab === tab.key
+//                 ? "bg-blue-600 text-white shadow"
+//                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+//             }`}
+//           >
+//             {tab.label}
+//           </button>
+//         ))}
+//       </div>
+
+//      {/* Common Problems  */}
+//       {activeTab === "common" && (reportData?.commonProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData?.commonProblems.map((item, i) => (
+//             <div
+//               key={i}
+//               className="bg-white shadow-md rounded-xl p-6 border border-gray-200"
+//             >
+//               <div className="text-xl font-semibold text-gray-800">
+//                 {item.problem}{" "}
+//                 <span
+//                   className="text-sm text-blue-600 cursor-pointer"
+//                   onClick={() => showModal(item.reporters, item.problem)}
+//                 >
+//                   ({item.count})
+//                 </span>
+//               </div>
+//               <div className="mt-3 flex flex-wrap gap-2">
+//                 <span
+//                   className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                   onClick={() => showModal(item.reporters, item.problem)}
+//                 >
+//                   {item.category}
+//                 </span>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/*  Ward Wise Report  */}
+//       {activeTab === "ward" && !!reportData && (reportData.wardWiseProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData.wardWiseProblems.map((ward) => (
+//             <div
+//               key={ward.ward}
+//               className="bg-white shadow rounded-lg border border-gray-200"
+//             >
+//               <div
+//                 onClick={() => toggleWard(String(ward.ward))}
+//                 className="cursor-pointer px-5 py-4 bg-gray-100 hover:bg-gray-200 flex justify-between items-center"
+//               >
+//                 <h3 className="font-semibold text-gray-800 text-lg">
+//                   Ward No: {ward.ward}
+//                 </h3>
+//                 <span className="text-gray-600 text-sm">
+//                   {expandedWards[String(ward.ward)] ? "▲ Collapse" : "▼ Expand"}
+//                 </span>
+//               </div>
+//               {expandedWards[String(ward.ward)] && (
+//                 <div className="p-5 space-y-4">
+//                   {ward.problems.map((issue, idx) => (
+//                     <div key={idx}>
+//                       <p className="font-medium text-gray-800">
+//                         {issue.problem}{" "}
+//                         <span
+//                           className="text-blue-600 cursor-pointer"
+//                           onClick={() =>
+//                             showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                           }
+//                         >
+//                           ({issue.count})
+//                         </span>
+//                       </p>
+//                       <div className="mt-3 flex flex-wrap gap-2">
+//                         <span
+//                           className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                           onClick={() =>
+//                             showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                           }
+//                         >
+//                           {issue.category}
+//                         </span>
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Analysis  */}
+//       {activeTab === "analysis" && (
+//         <ProblemChart reportData={reportData ?? {}} activeTab={activeTab} />
+//       )}
+
+//       {/*  Modal for report show*/}
+//       <Modal
+//         title={`Reporters for: ${modalTitle}`}
+//         open={isModalVisible}
+//         onCancel={() => setIsModalVisible(false)}
+//         footer={null}
+//       >
+//         <ul className="list-disc list-inside text-gray-700 space-y-1">
+//           {selectedReporters.map((r, idx) => (
+//             <li key={idx}>
+//               {r.docname} {r.wardNumber && `(Ward ${r.wardNumber})`}
+//             </li>
+//           ))}
+//         </ul>
+//       </Modal>
+//     </div>
+//   );
+// };
+// import React, { useState, useEffect } from "react";
+// import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+// import { fetchRequestReport } from "../Api/ReportPage";
+// import ProblemChart from "../components/chart";
+// import { Modal } from "antd";
+
+// interface CommonPro {
+//   category: string[];
+//   description: {
+//     english: string;
+//     hindi: string;
+//   };
+//   _id: string; // Added _id as per JSON
+// }
+
+// interface Reporter {
+//   docname: string;
+//   phoneNumber: string; // Added phone number
+//   wardNumber?: string;
+//   id: string; // Changed to id from _id as per JSON in reporters array
+//   commonproblems: CommonPro[];
+//   _id: string; // Added _id for Reporter itself
+// }
+
+// interface CommonProblem {
+//   problem: string;
+//   category: string[]; // Changed to string[]
+//   count: number;
+//   reporters: Reporter[];
+//   _id: string; // Added _id as per JSON
+// }
+
+// interface WardProblem {
+//   ward: number;
+//   problems: {
+//     problem: string;
+//     category: string[]; // Changed to string[]
+//     count: number;
+//     reporters: Reporter[];
+//     _id: string; // Added _id as per JSON
+//   }[];
+//   _id: string; // Added _id as per JSON
+// }
+
+// interface Analytics {
+//   ward: number;
+//   totalProblems: number;
+//   categories: Array<{ category: string; count: number; _id: string; }>; // More specific type
+//   _id: string; // Added _id as per JSON
+// }
+
+// export const ReportPage = () => {
+//   const { requestId } = useParams<{ requestId: string }>();
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState("common");
+//   const [reportData, setReportData] = useState<{
+
+//     commonProblems: CommonProblem[];
+//     wardWiseProblems: WardProblem[];
+//     analytics: Analytics[];
+//   } | null>(null);
+
+//   const [expandedWards, setExpandedWards] = useState<Record<string, boolean>>({});
+//   const [isModalVisible, setIsModalVisible] = useState(false);
+//   const [modalProblemDetails, setModalProblemDetails] = useState<{
+//     problem: string;
+//     reporters: Reporter[];
+//   } | null>(null);
+
+//   const toggleWard = (wardNo: string) => {
+//     setExpandedWards((prev) => ({ ...prev, [wardNo]: !prev[wardNo] }));
+//   };
+
+//   const showModal = (reporters: Reporter[], problemTitle: string) => {
+//     setModalProblemDetails({ problem: problemTitle, reporters: reporters });
+//     setIsModalVisible(true);
+//   };
+
+//   // Function to handle "View Document" click for a specific reporter
+//   const handleViewDocumentClick = (reporterId: string) => {
+//     // In a real application, you might navigate to a specific document page for the reporter
+//     // For now, as requested, we navigate to /dashboard
+//     console.log(`Viewing document for reporter ID: ${reporterId}`);
+//     navigate("/dashboard");
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       if (requestId) {
+//         const data = await fetchRequestReport(requestId);
+//         setReportData(data);
+//       }
+//     };
+//     fetchData();
+//   }, [requestId]);
+
+//   const tabs = [
+//     { key: "common", label: "Common Problems" },
+//     { key: "ward", label: "Ward Wise Report" },
+//     { key: "analysis", label: "Analysis" },
+//   ];
+
+//   return (
+//     <div className="w-full max-w-7xl mx-auto px-6 py-8 font-sans">
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-3xl font-bold text-gray-800">Report</h2>
+//         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+//           Print
+//         </button>
+//       </div>
+
+//       <div className="flex gap-4 mb-8">
+//         {tabs.map((tab) => (
+//           <button
+//             key={tab.key}
+//             onClick={() => setActiveTab(tab.key)}
+//             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+//               activeTab === tab.key
+//                 ? "bg-blue-600 text-white shadow"
+//                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+//             }`}
+//           >
+//             {tab.label}
+//           </button>
+//         ))}
+//       </div>
+
+//       {/* Common Problems  */}
+//       {activeTab === "common" && (reportData?.commonProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData?.commonProblems.map((item, i) => (
+//             <div
+//               key={item._id || i} // Use _id for key if available, fallback to index
+//               className="bg-white shadow-md rounded-xl p-6 border border-gray-200"
+//             >
+//               <div className="text-xl font-semibold text-gray-800">
+//                 {item.problem}{" "}
+//                 <span
+//                   className="text-sm text-blue-600 cursor-pointer"
+//                   onClick={() => showModal(item.reporters, item.problem)}
+//                 >
+//                   ({item.count})
+//                 </span>
+//               </div>
+//               <div className="mt-3 flex flex-wrap gap-2">
+//                 {item.category.map((cat, catIdx) => (
+//                   <span
+//                     key={catIdx}
+//                     className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                     onClick={() => showModal(item.reporters, item.problem)}
+//                   >
+//                     {cat}
+//                   </span>
+//                 ))}
+//               </div>
+//               {/* Note: The 'View Document' button in the uploaded image is for each entry in the table, not necessarily within the problem summary.
+//                   If you want a 'View Document' button here that navigates to a general dashboard, keep this:
+//               <div className="mt-4">
+//                 <button
+//                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-semibold"
+//                   onClick={() => navigate("/dashboard")} // Directly navigate
+//                 >
+//                   View Document
+//                 </button>
+//               </div>
+//               */}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Ward Wise Report  */}
+//       {activeTab === "ward" && !!reportData && (reportData.wardWiseProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData.wardWiseProblems.map((ward) => (
+//             <div
+//               key={ward._id || ward.ward} // Use _id for key if available
+//               className="bg-white shadow rounded-lg border border-gray-200"
+//             >
+//               <div
+//                 onClick={() => toggleWard(String(ward.ward))}
+//                 className="cursor-pointer px-5 py-4 bg-gray-100 hover:bg-gray-200 flex justify-between items-center"
+//               >
+//                 <h3 className="font-semibold text-gray-800 text-lg">
+//                   Ward No: {ward.ward}
+//                 </h3>
+//                 <span className="text-gray-600 text-sm">
+//                   {expandedWards[String(ward.ward)] ? "▲ Collapse" : "▼ Expand"}
+//                 </span>
+//               </div>
+//               {expandedWards[String(ward.ward)] && (
+//                 <div className="p-5 space-y-4">
+//                   {ward.problems.map((issue, idx) => (
+//                     <div key={issue._id || idx}> {/* Use _id for key if available */}
+//                       <p className="font-medium text-gray-800">
+//                         {issue.problem}{" "}
+//                         <span
+//                           className="text-blue-600 cursor-pointer"
+//                           onClick={() =>
+//                             showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                           }
+//                         >
+//                           ({issue.count})
+//                         </span>
+//                       </p>
+//                       <div className="mt-3 flex flex-wrap gap-2">
+//                         {issue.category.map((cat, catIdx) => (
+//                           <span
+//                             key={catIdx}
+//                             className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                             onClick={() =>
+//                               showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                             }
+//                           >
+//                             {cat}
+//                           </span>
+//                         ))}
+//                       </div>
+//                       {/* Note: See comment above for the 'View Document' button outside the modal content */}
+//                     </div>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Analysis  */}
+//       {activeTab === "analysis" && (
+//         <ProblemChart reportData={reportData ?? {}} activeTab={activeTab} />
+//       )}
+
+//       {/* Modal for report show*/}
+//       <Modal
+//         title={`Reporters for: ${modalProblemDetails?.problem}`} // More descriptive title
+//         open={isModalVisible}
+//         onCancel={() => setIsModalVisible(false)}
+//         footer={null}
+//         width={700} // Adjust modal width for better display of details
+//       >
+//         <div className="text-gray-700 space-y-4 max-h-96 overflow-y-auto pr-2"> {/* Added scroll and padding */}
+//           {modalProblemDetails?.reporters.map((reporter) => (
+//             <div key={reporter._id || reporter.id} className="border p-4 rounded-md shadow-sm bg-gray-50">
+//               <h4 className="font-bold text-lg mb-2">{reporter.docname}</h4>
+//               <p className="text-sm mb-1">
+//                 <span className="font-medium">Phone:</span> {reporter.phoneNumber}
+//               </p>
+//               {reporter.wardNumber && (
+//                 <p className="text-sm mb-2">
+//                   <span className="font-medium">Ward:</span> {reporter.wardNumber}
+//                 </p>
+//               )}
+
+//               <p className="font-semibold text-base mb-2">Reported Problems:</p>
+//               <ul className="list-disc list-inside space-y-2">
+//                 {reporter.commonproblems.length > 0 ? (
+//                   reporter.commonproblems.map((problemDetail) => (
+//                     <li key={problemDetail._id} className="mb-2">
+//                       <p className="text-sm font-medium">{problemDetail.description.english}</p>
+//                       {problemDetail.description.hindi && (
+//                         <p className="text-xs text-gray-600 italic">{problemDetail.description.hindi}</p>
+//                       )}
+//                       <div className="flex flex-wrap gap-1 mt-1">
+//                         {problemDetail.category.map((cat, catIdx) => (
+//                           <span key={catIdx} className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium ">
+//                             {cat}
+//                           </span>
+//                         ))}
+//                       </div>
+//                     </li>
+//                   ))
+//                 ) : (
+//                   <p className="text-sm text-gray-500">No specific problems detailed for this reporter.</p>
+//                 )}
+//               </ul>
+
+//               <div className="mt-4 text-right">
+//                 <button
+//                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm"
+//                   onClick={() => handleViewDocumentClick(reporter.id)} // Pass reporter ID if needed for actual document fetching
+//                 >
+//                   View Document
+//                 </button>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+///  verison 2 // import React, { useState, useEffect } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import { fetchRequestReport } from "../Api/ReportPage";
+// import ProblemChart from "../components/chart";
+// import { Modal } from "antd";
+
+// interface CommonPro {
+//   category: string[];
+//   description: {
+//     english: string;
+//     hindi: string;
+//   };
+//   _id: string;
+// }
+
+// interface Reporter {
+//   docname: string;
+//   phoneNumber: string;
+//   wardNumber?: string;
+//   id: string; // The ID you want to use for the document path
+//   _id: string; // MongoDB's _id
+//   commonproblems: CommonPro[];
+// }
+
+// interface CommonProblem {
+//   problem: string;
+//   category: string[];
+//   count: number;
+//   reporters: Reporter[];
+//   _id: string;
+// }
+
+// interface WardProblem {
+//   ward: number;
+//   problems: {
+//     problem: string;
+//     category: string[];
+//     count: number;
+//     reporters: Reporter[];
+//     _id: string;
+//   }[];
+//   _id: string;
+// }
+
+// interface Analytics {
+//   ward: number;
+//   totalProblems: number;
+//   categories: Array<{ category: string; count: number; _id: string; }>;
+//   _id: string;
+// }
+
+// export const ReportPage = () => {
+//   const { requestId } = useParams<{ requestId: string }>(); // Get requestId from URL
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState("common");
+//   const [reportData, setReportData] = useState<{
+//     commonProblems: CommonProblem[];
+//     wardWiseProblems: WardProblem[];
+//     analytics: Analytics[];
+//   } | null>(null);
+
+//   const [expandedWards, setExpandedWards] = useState<Record<string, boolean>>({});
+//   const [isModalVisible, setIsModalVisible] = useState(false);
+//   const [modalProblemDetails, setModalProblemDetails] = useState<{
+//     problem: string;
+//     reporters: Reporter[];
+//   } | null>(null);
+
+//   const toggleWard = (wardNo: string) => {
+//     setExpandedWards((prev) => ({ ...prev, [wardNo]: !prev[wardNo] }));
+//   };
+
+//   const showModal = (reporters: Reporter[], problemTitle: string) => {
+//     setModalProblemDetails({ problem: problemTitle, reporters: reporters });
+//     setIsModalVisible(true);
+//   };
+
+//   // Modified handleViewDocumentClick to include requestId and reporter's document ID
+//   const handleViewDocumentClick = (reporterDocId: string) => {
+//     if (requestId) { // Ensure requestId is available
+//       // Navigate to the specified path: dashboard/requestDetails/requestId/document/reporterDocId
+//       navigate(`/dashboard/requestDetails/${requestId}/document/${reporterDocId}`);
+//     } else {
+//       console.warn("Request ID not found for navigation.");
+//       // Optionally navigate to a default dashboard or show an error
+//       navigate("/dashboard");
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       if (requestId) {
+//         const data = await fetchRequestReport(requestId);
+//         setReportData(data);
+//       }
+//     };
+//     fetchData();
+//   }, [requestId]);
+
+//   const tabs = [
+//     { key: "common", label: "Common Problems" },
+//     { key: "ward", label: "Ward Wise Report" },
+//     { key: "analysis", label: "Analysis" },
+//   ];
+
+//   return (
+//     <div className="w-full max-w-7xl mx-auto px-6 py-8 font-sans">
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-3xl font-bold text-gray-800">Report</h2>
+//         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+//           Print
+//         </button>
+//       </div>
+
+//       <div className="flex gap-4 mb-8">
+//         {tabs.map((tab) => (
+//           <button
+//             key={tab.key}
+//             onClick={() => setActiveTab(tab.key)}
+//             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+//               activeTab === tab.key
+//                 ? "bg-blue-600 text-white shadow"
+//                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+//             }`}
+//           >
+//             {tab.label}
+//           </button>
+//         ))}
+//       </div>
+
+//       {/* Common Problems  */}
+//       {activeTab === "common" && (reportData?.commonProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData?.commonProblems.map((item, i) => (
+//             <div
+//               key={item._id || i}
+//               className="bg-white shadow-md rounded-xl p-6 border border-gray-200"
+//             >
+//               <div className="text-xl font-semibold text-gray-800">
+//                 {item.problem}{" "}
+//                 <span
+//                   className="text-sm text-blue-600 cursor-pointer"
+//                   onClick={() => showModal(item.reporters, item.problem)}
+//                 >
+//                   ({item.count})
+//                 </span>
+//               </div>
+//               <div className="mt-3 flex flex-wrap gap-2">
+//                 {item.category.map((cat, catIdx) => (
+//                   <span
+//                     key={catIdx}
+//                     className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                     onClick={() => showModal(item.reporters, item.problem)}
+//                   >
+//                     {cat}
+//                   </span>
+//                 ))}
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Ward Wise Report  */}
+//       {activeTab === "ward" && !!reportData && (reportData.wardWiseProblems?.length ?? 0) > 0 && (
+//         <div className="space-y-5">
+//           {reportData.wardWiseProblems.map((ward) => (
+//             <div
+//               key={ward._id || ward.ward}
+//               className="bg-white shadow rounded-lg border border-gray-200"
+//             >
+//               <div
+//                 onClick={() => toggleWard(String(ward.ward))}
+//                 className="cursor-pointer px-5 py-4 bg-gray-100 hover:bg-gray-200 flex justify-between items-center"
+//               >
+//                 <h3 className="font-semibold text-gray-800 text-lg">
+//                   Ward No: {ward.ward}
+//                 </h3>
+//                 <span className="text-gray-600 text-sm">
+//                   {expandedWards[String(ward.ward)] ? "▲ Collapse" : "▼ Expand"}
+//                 </span>
+//               </div>
+//               {expandedWards[String(ward.ward)] && (
+//                 <div className="p-5 space-y-4">
+//                   {ward.problems.map((issue, idx) => (
+//                     <div key={issue._id || idx}>
+//                       <p className="font-medium text-gray-800">
+//                         {issue.problem}{" "}
+//                         <span
+//                           className="text-blue-600 cursor-pointer"
+//                           onClick={() =>
+//                             showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                           }
+//                         >
+//                           ({issue.count})
+//                         </span>
+//                       </p>
+//                       <div className="mt-3 flex flex-wrap gap-2">
+//                         {issue.category.map((cat, catIdx) => (
+//                           <span
+//                             key={catIdx}
+//                             className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium cursor-pointer"
+//                             onClick={() =>
+//                               showModal(issue.reporters, `Ward ${ward.ward} - ${issue.problem}`)
+//                             }
+//                           >
+//                             {cat}
+//                           </span>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               )}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Analysis  */}
+//       {activeTab === "analysis" && (
+//         <ProblemChart reportData={reportData ?? {}} activeTab={activeTab} />
+//       )}
+
+//       {/* Modal for report show*/}
+//       <Modal
+//         title={`Reporters for: ${modalProblemDetails?.problem}`}
+//         open={isModalVisible}
+//         onCancel={() => setIsModalVisible(false)}
+//         footer={null}
+//         width={700}
+//       >
+//         <div className="text-gray-700 space-y-4 max-h-96 overflow-y-auto pr-2">
+//           {modalProblemDetails?.reporters.map((reporter) => (
+//             <div key={reporter._id || reporter.id} className="border p-4 rounded-md shadow-sm bg-gray-50">
+//               <h4 className="font-bold text-lg mb-2">{reporter.docname}</h4>
+//               <p className="text-sm mb-1">
+//                 <span className="font-medium">Phone:</span> {reporter.phoneNumber}
+//               </p>
+//               {reporter.wardNumber && (
+//                 <p className="text-sm mb-2">
+//                   <span className="font-medium">Ward:</span> {reporter.wardNumber}
+//                 </p>
+//               )}
+
+//               <p className="font-semibold text-base mb-2">Reported Problems:</p>
+//               <ul className="list-disc list-inside space-y-2">
+//                 {reporter.commonproblems.length > 0 ? (
+//                   reporter.commonproblems.map((problemDetail) => (
+//                     <li key={problemDetail._id} className="mb-2">
+//                       <p className="text-sm font-medium">{problemDetail.description.english}</p>
+//                       {problemDetail.description.hindi && (
+//                         <p className="text-xs text-gray-600 italic">{problemDetail.description.hindi}</p>
+//                       )}
+//                       <div className="flex flex-wrap gap-1 mt-1">
+//                         {problemDetail.category.map((cat, catIdx) => (
+//                           <span key={catIdx} className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+//                             {cat}
+//                           </span>
+//                         ))}
+//                       </div>
+//                     </li>
+//                   ))
+//                 ) : (
+//                   <p className="text-sm text-gray-500">No specific problems detailed for this reporter.</p>
+//                 )}
+//               </ul>
+
+//               <div className="mt-4 text-right">
+//                 <button
+//                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm"
+//                   onClick={() => handleViewDocumentClick(reporter.id)} // Pass reporter.id
+//                 >
+//                   View Document
+//                 </button>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// version 2

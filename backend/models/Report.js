@@ -28,6 +28,10 @@ const reportSchema = new mongoose.Schema(
               type: String,
               required: true,
             },
+            phoneNumber: {
+            type: String,
+           // required: true,
+             },
             wardNumber: {
               type: String,
               required: true,
@@ -36,6 +40,15 @@ const reportSchema = new mongoose.Schema(
               type: mongoose.Schema.Types.ObjectId,
               required: true,
             },
+            commonproblems: [
+  {
+    category: [String],
+    description: {
+      english: String,
+      hindi: String,
+    },
+  },
+]
           },
         ],
       },
@@ -70,6 +83,23 @@ const reportSchema = new mongoose.Schema(
                   type: mongoose.Schema.Types.ObjectId,
                   required: true,
                 },
+                phoneNumber: {
+            type: String,
+           // required: true,
+             },
+             wardNumber: {
+              type: String,
+              required: true,
+            },
+            commonproblems: [
+  {
+    category: [String],
+    description: {
+      english: String,
+      hindi: String,
+    },
+  },
+]
               },
             ],
           },

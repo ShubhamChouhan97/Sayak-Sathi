@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DocumentDetails,downloadDocument } from "../Api/DocumentPageAPI";
+import { useNavigate } from "react-router-dom";
 
 interface Problem {
   text: string;
@@ -16,6 +17,7 @@ interface DocumentData {
 }
 
 export const DocumentPreview: React.FC = () => {
+  const navigate = useNavigate();
   const { requestId, documentId } = useParams<{ requestId: string; documentId: string }>();
   const [docData, setDocData] = useState<DocumentData | null>(null);
 
@@ -67,9 +69,21 @@ export const DocumentPreview: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Document</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Document</h1> 
           <p className="text-sm text-gray-500">
-            Requests &gt; Documents &gt; <span className="font-medium">{docData.name.split(" ")[0]}'s</span> Document
+
+        <span onClick={()=>{
+          navigate('/dashboard/requests');
+        }}>
+           Requests
+          </span>    
+            &gt; 
+          <span onClick={()=>{
+            navigate(`/dashboard/requestDetails/${requestId}`)
+          }}>
+ Documents 
+          </span>  
+            &gt; <span className="font-medium">{docData.name.split(" ")[0]}'s</span> Document
           </p>
         </div>
         <button

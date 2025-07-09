@@ -1,7 +1,7 @@
 import genAI from "../config/gemini.js";
 
 export const analysisReportAI = async (document) => {
-    console.log("functionn call",document);
+   // console.log("functionn call",document);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
@@ -9,7 +9,7 @@ You are an expert analyst. Given the following complaint documents from villager
 
 1. commonProblems: List of problems that multiple people reported.
    Each item should include:
-   - problem: 20 words English title
+   - problem: 40 words English title
    - category:provide problem related category one or more categories
    - reporters: array of people who reported it (with docname, wardNumber,_id,phoneNumber,problems )
    - count: count of reporters

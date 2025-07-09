@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const reportSchema = new mongoose.Schema(
   {
     requestId: {
-        type: String,
-        required: true
-        },
+      type: String,
+      required: true,
+    },
     commonProblems: [
       {
         problem: {
@@ -29,9 +29,9 @@ const reportSchema = new mongoose.Schema(
               required: true,
             },
             phoneNumber: {
-            type: String,
-           // required: true,
-             },
+              type: String,
+              // required: true,
+            },
             wardNumber: {
               type: String,
               required: true,
@@ -41,14 +41,14 @@ const reportSchema = new mongoose.Schema(
               required: true,
             },
             commonproblems: [
-  {
-    category: [String],
-    description: {
-      english: String,
-      hindi: String,
-    },
-  },
-]
+              {
+                category: [String],
+                description: {
+                  english: String,
+                  hindi: String,
+                },
+              },
+            ],
           },
         ],
       },
@@ -65,10 +65,12 @@ const reportSchema = new mongoose.Schema(
               type: String,
               required: true,
             },
-            category: [{
-              type: String,
-              required: true,
-            }],
+            category: [
+              {
+                type: String,
+                required: true,
+              },
+            ],
             count: {
               type: Number,
               required: true,
@@ -84,22 +86,22 @@ const reportSchema = new mongoose.Schema(
                   required: true,
                 },
                 phoneNumber: {
-            type: String,
-           // required: true,
-             },
-             wardNumber: {
-              type: String,
-              required: true,
-            },
-            commonproblems: [
-  {
-    category: [String],
-    description: {
-      english: String,
-      hindi: String,
-    },
-  },
-]
+                  type: String,
+                  // required: true,
+                },
+                wardNumber: {
+                  type: String,
+                  required: true,
+                },
+                commonproblems: [
+                  {
+                    category: [String],
+                    description: {
+                      english: String,
+                      hindi: String,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -116,7 +118,7 @@ const reportSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-        categories:[
+        categories: [
           {
             category: {
               type: String,
@@ -126,8 +128,8 @@ const reportSchema = new mongoose.Schema(
               type: Number,
               required: true,
             },
-          }
-        ]
+          },
+        ],
       },
     ],
   },

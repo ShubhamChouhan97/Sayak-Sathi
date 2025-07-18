@@ -148,7 +148,7 @@ export const generateRequest = async (req, res) => {
    });
     console.log("socket done");
     // const generate = await generateData(fileRelativePath);
-    const result = generateData(requestId,updatedRequest.createdBy.toString());
+    const result = await generateData(requestId,updatedRequest.createdBy.toString());
 console.log(" Final OCR & Translations:", result);
 
    res.status(200).json({ message: "Request status updated to In Progress" });
@@ -199,7 +199,7 @@ const generateData = async (requestId, createdBy) => {
 
    //  console.log("documents found", safeDocuments);
       const aiReport =  await analysisReportAI(safeDocuments);
-    console.log("data",aiReport);
+      console.log("data",aiReport);
        await saveReportToDB(requestId, aiReport);
   } catch (error) {
     console.error(" ERROR in RequestReport:", error.message);

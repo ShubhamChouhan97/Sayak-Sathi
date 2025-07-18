@@ -56,10 +56,10 @@ app.use(morgan('dev'));
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
-  console.log('✅ Connected to MongoDB');
+  console.log(' Connected to MongoDB');
 })
 .catch(err => {
-  console.error('❌ MongoDB connection error:', err);
+  console.error('MongoDB connection error:', err);
 });
 
 // Routes
@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the SayakSathi Backend API');
 });
 
-// ✅ Start server
+//  Start server
 server.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

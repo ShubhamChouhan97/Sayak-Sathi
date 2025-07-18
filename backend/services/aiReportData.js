@@ -1,12 +1,12 @@
 import genAI from "../config/gemini.js";
 
 export const analysisReportAI = async (document) => {
-   // console.log("functionn call",document);
+    console.log("functionn call",document);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
 You are an expert analyst. Given the following complaint documents from villagers, analyze and return structured JSON data for 3 sections:
-
+and it is stricky instructed to provide commonPrblems
 1. commonProblems: List of problems that multiple people reported.
    Each item should include:
    - problem: 40 words English title
